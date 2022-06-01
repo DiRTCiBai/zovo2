@@ -1,6 +1,7 @@
 import '../models/database_models/zwemmer.dart';
 
 List<Zwemmer> zwemmerTestData = [
+  /// GZ
   Zwemmer(
     id: "1",
     opmerking: "",
@@ -8,7 +9,7 @@ List<Zwemmer> zwemmerTestData = [
     groep: "GZ",
     isAanwezig: false,
     isSelected: false,
-    niveauId: "GZ1",
+    niveauId: "GZ2",
     statusOef1: false,
     statusOef2: false,
   ),
@@ -42,6 +43,52 @@ List<Zwemmer> zwemmerTestData = [
     isAanwezig: false,
     isSelected: false,
     niveauId: "GZ1",
+    statusOef1: false,
+    statusOef2: false,
+  ),
+
+  /// KZ
+  Zwemmer(
+    id: "5",
+    opmerking: "",
+    naam: "test 5",
+    groep: "KZ",
+    isAanwezig: false,
+    isSelected: false,
+    niveauId: "KZ1",
+    statusOef1: false,
+    statusOef2: false,
+  ),
+  Zwemmer(
+    id: "6",
+    opmerking: "",
+    naam: "test 6",
+    groep: "KZ",
+    isAanwezig: false,
+    isSelected: false,
+    niveauId: "KZ1",
+    statusOef1: false,
+    statusOef2: false,
+  ),
+  Zwemmer(
+    id: "7",
+    opmerking: "",
+    naam: "test 7",
+    groep: "KZ",
+    isAanwezig: false,
+    isSelected: false,
+    niveauId: "KZ1",
+    statusOef1: false,
+    statusOef2: false,
+  ),
+  Zwemmer(
+    id: "8",
+    opmerking: "",
+    naam: "test 8",
+    groep: "KZ",
+    isAanwezig: false,
+    isSelected: false,
+    niveauId: "KZ1",
     statusOef1: false,
     statusOef2: false,
   ),

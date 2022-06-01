@@ -16,10 +16,13 @@ class StartScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () => context.go('/startScreen/AfnemenScreen/te'),
+              onPressed: () => context.go('/startScreen/AfnemenScreen/afnemen'),
               child: const Text("Aanwezigheden"),
             ),
-            ElevatedButton(onPressed: () {}, child: const Text("Testen")),
+            ElevatedButton(
+              onPressed: () => context.go('/startScreen/AfnemenScreen/testen'),
+              child: const Text("Testen"),
+            ),
             ElevatedButton(onPressed: () {}, child: const Text("Zwemmers")),
           ],
         ),

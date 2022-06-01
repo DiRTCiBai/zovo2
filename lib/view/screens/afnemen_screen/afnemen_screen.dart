@@ -70,20 +70,38 @@ class _AfnemenScreenWrappedState extends State<AfnemenScreenWrapped> {
               child: state.mode ? const Text("Save") : const Text("Test"),
             ),
             appBar: AppBar(),
-            body: ListView.builder(
-              itemBuilder: (ctx, index) {
-                final zwemmer = state.zwemmerLijst[index];
-                return GestureDetector(
-                  onTap: () => _cubit.toggle(zwemmer.zwemmerId),
-                  child: Container(
-                    height: 75,
-                    margin: const EdgeInsets.all(10),
-                    color: zwemmer.isSelected ? Colors.green : Colors.yellow,
-                    child: Text(zwemmer.naam),
+            body: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: state.groepen
+                        .map((e) => ElevatedButton(
+                              onPressed: () {
+                                _cubit.changeGroep(e);
+                              },
+                              child: Text(e),
+                            ))
+                        .toList(),
                   ),
-                );
-              },
-              itemCount: state.zwemmerLijst.length,
+                ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (BuildContext context, int index) {
+                      final zwemmer = state.zwemmerLijst[index];
+                      return Container(
+                        color: zwemmer.isSelected ? Colors.green : Colors.white,
+                        child: ListTile(
+                          onTap: () => _cubit.toggle(zwemmer.zwemmerId),
+                          title: Text(zwemmer.naam),
+                          trailing: Text("${zwemmer.niveau}"),
+                        ),
+                      );
+                    },
+                    childCount: state.zwemmerLijst.length,
+                  ),
+                ),
+              ],
             ),
           );
         }
