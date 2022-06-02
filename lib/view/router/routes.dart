@@ -9,8 +9,8 @@ final router = GoRouter(
       builder: (ctx, state) => const StartScreen(),
       routes: [
         GoRoute(
-          path: 'AfnemenScreen/:isAfnemen',
-          builder: (ctx, state) => AfnemenScreen(isAfnemen: state.params["isAfnemen"]!),
+          path: 'AfnemenScreen',
+          builder: (ctx, state) => AfnemenScreen(),
           routes: [
             GoRoute(
               path: 'TestScreen',

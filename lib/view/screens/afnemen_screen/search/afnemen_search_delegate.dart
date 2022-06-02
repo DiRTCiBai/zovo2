@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zovo2/models/database_models/database_models.dart';
+import 'package:zovo2/provider/zwemmer_lijst_provider.dart';
 
 import '../../../../controllers/zwemmers_controller/zwemmers_controller.dart';
 
 class AfnemenSearchDelegate extends SearchDelegate {
   final _searchController = ZwemmersController();
+  final WidgetRef ref;
+
+  AfnemenSearchDelegate({required this.ref});
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -26,6 +31,7 @@ class AfnemenSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
+    final provider = ref.read(zwemmerLijstProvider);
     if (query.length < 3) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -37,12 +43,11 @@ class AfnemenSearchDelegate extends SearchDelegate {
       );
     }
 
-    List<Zwemmer> zwemmers = _searchController.getSearchResults(query);
+    List<Zwemmer> zwemmers = provider.getSearchResults(query);
     return ListView.builder(
       itemBuilder: (ctx, index) {
         return ZwemmerTile(
           zwemmer: zwemmers[index],
-          zwemmersController: _searchController,
         );
       },
       itemCount: zwemmers.length,
@@ -51,12 +56,12 @@ class AfnemenSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<Zwemmer> zwemmers = _searchController.getSearchResults(query);
+    final provider = ref.read(zwemmerLijstProvider);
+    List<Zwemmer> zwemmers = provider.getSearchResults(query);
     return ListView.builder(
       itemBuilder: (ctx, index) {
         return ZwemmerTile(
           zwemmer: zwemmers[index],
-          zwemmersController: _searchController,
         );
       },
       itemCount: zwemmers.length,
@@ -64,31 +69,24 @@ class AfnemenSearchDelegate extends SearchDelegate {
   }
 }
 
-class ZwemmerTile extends StatefulWidget {
+class ZwemmerTile extends ConsumerWidget {
   const ZwemmerTile({
-    required this.zwemmersController,
     required this.zwemmer,
     Key? key,
   }) : super(key: key);
   final Zwemmer zwemmer;
-  final ZwemmersController zwemmersController;
 
   @override
-  _ZwemmerTileState createState() => _ZwemmerTileState();
-}
-
-class _ZwemmerTileState extends State<ZwemmerTile> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final provider = ref.watch(zwemmerLijstProvider);
     return Container(
-      color: widget.zwemmer.isAanwezig ? Colors.green : Colors.white,
+      color: zwemmer.isAanwezig ? Colors.green : Colors.white,
       child: ListTile(
         onTap: () {
-          setState(() {
-            widget.zwemmersController.toggleAanwezighden(widget.zwemmer.id);
-          });
+          provider.setMode(true);
+          provider.toggle(zwemmer.id);
         },
-        title: Text(widget.zwemmer.naam),
+        title: Text(zwemmer.naam),
       ),
     );
   }
