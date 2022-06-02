@@ -23,7 +23,10 @@ class StartScreen extends StatelessWidget {
               onPressed: () => context.go('/startScreen/AfnemenScreen/testen'),
               child: const Text("Testen"),
             ),
-            ElevatedButton(onPressed: () {}, child: const Text("Zwemmers")),
+            ElevatedButton(
+              onPressed: () => context.go('/startScreen/ZwemmersScreen'),
+              child: const Text("Zwemmers"),
+            ),
           ],
         ),
       ),
