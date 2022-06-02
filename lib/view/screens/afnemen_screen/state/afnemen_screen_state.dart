@@ -18,11 +18,13 @@ class AfnemenScreenDisplay extends AfnemenScreenState {
   final List<Afnemen> zwemmerLijst;
   final bool mode;
   final List<String> groepen;
+  final String currentGroep;
 
   AfnemenScreenDisplay({
     required this.zwemmerLijst,
     required this.mode,
     required this.groepen,
+    required this.currentGroep,
   });
 
   @override

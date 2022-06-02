@@ -1,1 +1,8 @@
-List<String> groepen = ["GZ", "KZ"];
+List<String> groepen = [
+  "Kik",
+  "KZ",
+  "GZ",
+  "Dol",
+  "Wal",
+  "Ork",
+];

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:zovo2/view/screens/afnemen_screen/search/afnemen_search_delegate.dart';
 
 import 'state/afnemen_screen_cubit.dart';
 
@@ -69,20 +70,39 @@ class _AfnemenScreenWrappedState extends State<AfnemenScreenWrapped> {
               },
               child: state.mode ? const Text("Save") : const Text("Test"),
             ),
-            appBar: AppBar(),
+            appBar: AppBar(
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    showSearch(context: context, delegate: AfnemenSearchDelegate());
+                  },
+                  icon: const Icon(Icons.search),
+                ),
+              ],
+            ),
             body: CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: state.groepen
-                        .map((e) => ElevatedButton(
-                              onPressed: () {
-                                _cubit.changeGroep(e);
-                              },
-                              child: Text(e),
-                            ))
-                        .toList(),
+                  child: SizedBox(
+                    height: 50,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (ctx, index) {
+                        final groep = state.groepen[index];
+
+                        return ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                state.currentGroep == state.groepen[index] ? Colors.green : Colors.blue),
+                          ),
+                          onPressed: () {
+                            _cubit.changeGroep(groep);
+                          },
+                          child: Text(groep),
+                        );
+                      },
+                      itemCount: state.groepen.length,
+                    ),
                   ),
                 ),
                 SliverList(

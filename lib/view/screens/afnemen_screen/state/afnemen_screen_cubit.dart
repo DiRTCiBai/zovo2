@@ -19,6 +19,7 @@ class AfnemenScreenCubit extends Cubit<AfnemenScreenState> {
     if (mode == "afnemen") {
       _mode = true;
       emit(AfnemenScreenDisplay(
+        currentGroep: _currentGroep,
         zwemmerLijst: _map(),
         groepen: _groepen,
         mode: true,
@@ -29,6 +30,7 @@ class AfnemenScreenCubit extends Cubit<AfnemenScreenState> {
 
     emit(AfnemenScreenDisplay(
       zwemmerLijst: _map(),
+      currentGroep: _currentGroep,
       groepen: _groepen,
       mode: false,
     ));
@@ -51,6 +53,7 @@ class AfnemenScreenCubit extends Cubit<AfnemenScreenState> {
     emit(AfnemenScreenDisplay(
       zwemmerLijst: _map(),
       groepen: _groepen,
+      currentGroep: _currentGroep,
       mode: _mode,
     ));
   }
@@ -93,6 +96,7 @@ class AfnemenScreenCubit extends Cubit<AfnemenScreenState> {
 
     emit(AfnemenScreenDisplay(
       zwemmerLijst: _map(),
+      currentGroep: _currentGroep,
       groepen: _groepen,
       mode: _mode,
     ));
