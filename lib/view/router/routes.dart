@@ -2,7 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:zovo2/view/screens/screens.dart';
 
 final router = GoRouter(
-  initialLocation: StartScreen.route,
+  initialLocation: '/startScreen',
   routes: [
     GoRoute(
       path: '/startScreen',
@@ -21,6 +21,10 @@ final router = GoRouter(
         GoRoute(
           path: 'ZwemmersScreen',
           builder: (ctx, state) => const ZwemmersScreen(),
+        ),
+        GoRoute(
+          path: 'ExportImportScreen',
+          builder: (ctx, state) => ExportImportScreen(),
         ),
       ],
     ),

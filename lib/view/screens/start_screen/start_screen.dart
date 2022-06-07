@@ -4,13 +4,22 @@ import 'package:go_router/go_router.dart';
 
 import '../../../provider/zwemmer_lijst_provider.dart';
 
-class StartScreen extends ConsumerWidget {
+class StartScreen extends ConsumerStatefulWidget {
   const StartScreen({Key? key}) : super(key: key);
 
-  static const route = "/StartScreen";
+  @override
+  _StartScreenState createState() => _StartScreenState();
+}
+
+class _StartScreenState extends ConsumerState<StartScreen> {
+  @override
+  void initState() {
+    super.initState();
+    ref.read(zwemmerLijstProvider).init();
+  }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
       body: SizedBox(
@@ -20,14 +29,14 @@ class StartScreen extends ConsumerWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                ref.read(zwemmerLijstProvider).setMode(true);
+                ref.read(zwemmerLijstProvider).setAfnemenMode(true);
                 context.go('/startScreen/AfnemenScreen');
               },
               child: const Text("Aanwezigheden"),
             ),
             ElevatedButton(
               onPressed: () {
-                ref.read(zwemmerLijstProvider).setMode(false);
+                ref.read(zwemmerLijstProvider).setAfnemenMode(false);
                 context.go('/startScreen/AfnemenScreen');
               },
               child: const Text("Testen"),
@@ -35,6 +44,10 @@ class StartScreen extends ConsumerWidget {
             ElevatedButton(
               onPressed: () => context.go('/startScreen/ZwemmersScreen'),
               child: const Text("Zwemmers"),
+            ),
+            ElevatedButton(
+              onPressed: () => context.go('/startScreen/ExportImportScreen'),
+              child: const Text("Export"),
             ),
           ],
         ),

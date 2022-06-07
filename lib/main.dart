@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
+import 'services/database/zwemmer_database/zwemmer.dart';
 import 'view/router/routes.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(ZwemmerDataAdapter());
   runApp(
     const ProviderScope(
       child: MyApp(),

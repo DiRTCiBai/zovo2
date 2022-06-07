@@ -1,34 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive/hive.dart';
+import 'package:zovo2/controllers/database/csv_data.dart';
 import 'package:zovo2/models/database_models/database_models.dart';
 
-import '../models/ui_models/afnemen.dart';
+import '../models/ui_models/ui_models.dart';
+import '../services/database/zwemmer_database/zwemmer.dart';
 import '../test_data/niveau_test_data.dart';
-import '../test_data/zwemmer_test_data.dart';
 
 class ZwemmerLijst extends ChangeNotifier {
-  final List<Zwemmer> _zwemmers = zwemmerTestData;
+  List<Zwemmer> _zwemmers = [];
   final List<Niveau> _niveaus = niveauTestData;
-  final List<String> _groepen = ["Kik", "KZ", "GZ", "Dol", "Wal", "Ork"];
+  final List<String> _groepen = ["Kik", "KZ", "GZ", "DOL", "Wal", "Ork"];
   String _currentGroep = "GZ";
   bool _mode = false;
-
+  Box? box;
   bool get mode => _mode;
+
+  void init() async {
+    box = await Hive.openBox<ZwemmerData>('zwemmers');
+    final res = box!.values;
+    res.forEach((element) {
+      print(element.naam);
+    });
+    _zwemmers = [
+      ...res
+          .map(
+            (e) => Zwemmer(
+              isSelected: e.isSelected,
+              naam: e.naam,
+              opmerking: e.opmerking,
+              id: e.id,
+              groep: e.groep,
+              isAanwezig: e.isAanwezig,
+              niveauId: e.niveauId,
+              statusOef1: e.statusOef1,
+              statusOef2: e.statusOef2,
+            ),
+          )
+          .toList()
+    ];
+  }
+
+  List<Zwemmer> temp() {
+    final res = box!.values;
+    res.forEach((element) {
+      print(element.naam);
+    });
+    return [
+      ...res
+          .map(
+            (e) => Zwemmer(
+              isSelected: e.isSelected,
+              naam: e.naam,
+              opmerking: e.opmerking,
+              id: e.id,
+              groep: e.groep,
+              isAanwezig: e.isAanwezig,
+              niveauId: e.niveauId,
+              statusOef1: e.statusOef1,
+              statusOef2: e.statusOef2,
+            ),
+          )
+          .toList()
+    ];
+  }
 
   void toggle(String zwemmerId) {
     if (_mode) {
-      final res = zwemmerTestData.firstWhere((element) => element.id == zwemmerId);
+      final res = _zwemmers.firstWhere((element) => element.id == zwemmerId);
       res.isAanwezig = !res.isAanwezig;
+      //print("$mode - ${res.isAanwezig}");
       notifyListeners();
     }
 
     if (!_mode) {
-      final res = zwemmerTestData.firstWhere((element) => element.id == zwemmerId);
+      final res = _zwemmers.firstWhere((element) => element.id == zwemmerId);
       res.isSelected = !res.isSelected;
+      //print("$mode - ${res.isAanwezig}");
       notifyListeners();
     }
-
-    print("sdfsdf");
   }
 
   List<Zwemmer> get zwemmers => _zwemmers;
@@ -73,9 +124,129 @@ class ZwemmerLijst extends ChangeNotifier {
     return _zwemmers.where((element) => element.naam.toLowerCase().contains(query.toLowerCase())).toList();
   }
 
-  void setMode(bool set) {
+  void setAfnemenMode(bool set) {
     _mode = set;
     notifyListeners();
+  }
+
+  List<ZwemmerTest> _oef1 = [];
+  List<ZwemmerTest> _oef2 = [];
+
+  List<ZwemmerTest> oefening1() {
+    zwemmerLijstOef();
+    return _oef1;
+  }
+
+  List<ZwemmerTest> oefening2() {
+    zwemmerLijstOef();
+    return _oef2;
+  }
+
+  void zwemmerLijstOef() {
+    final res =
+        _zwemmers.where((element) => element.isAanwezig == true && element.isSelected == true).toList();
+
+    _oef1.clear();
+    _oef2.clear();
+
+    for (var value in res) {
+      final niveau = _niveaus.firstWhere((element) => element.id == value.niveauId);
+
+      _oef1.add(
+        ZwemmerTest(
+          zwemmerId: value.id,
+          naam: value.naam,
+          niveauId: value.niveauId,
+          statusOef: value.statusOef1,
+          oef: niveau.oef1,
+        ),
+      );
+
+      _oef2.add(
+        ZwemmerTest(
+          zwemmerId: value.id,
+          naam: value.naam,
+          niveauId: value.niveauId,
+          statusOef: value.statusOef2,
+          oef: niveau.oef2,
+        ),
+      );
+    }
+  }
+
+  void toggleTest(String zwemmerId, int oefIndex) {
+    final res = _zwemmers.firstWhere((element) => element.id == zwemmerId);
+
+    if (oefIndex == 1) {
+      res.statusOef1 = !res.statusOef1;
+    }
+
+    if (oefIndex == 2) {
+      res.statusOef2 = !res.statusOef2;
+    }
+
+    zwemmerLijstOef();
+    notifyListeners();
+  }
+
+  void importZwemmerData() async {
+    final res = await CSVData().impotZwemmerData();
+
+    var box = await Hive.openBox<ZwemmerData>('zwemmers');
+    box.clear();
+
+    for (var value in res) {
+      box.put(
+        value[0].toString(),
+        ZwemmerData(
+          id: value[0].toString(),
+          opmerking: value[6].toString(),
+          naam: value[1].toString(),
+          groep: value[2].toString(),
+          isAanwezig: false,
+          isSelected: false,
+          niveauId: value[3].toString(),
+          statusOef1: value[4].toString().toLowerCase() == 'true',
+          statusOef2: value[5].toString().toLowerCase() == 'true',
+        ),
+      );
+    }
+
+    _zwemmers = [
+      ...box.values
+          .map(
+            (e) => Zwemmer(
+              id: e.id,
+              opmerking: e.opmerking,
+              naam: e.naam,
+              groep: e.groep,
+              isAanwezig: false,
+              isSelected: false,
+              niveauId: e.niveauId,
+              statusOef1: e.statusOef1,
+              statusOef2: e.statusOef2,
+            ),
+          )
+          .toList()
+    ];
+
+    box.close();
+    notifyListeners();
+  }
+
+  void exportZwemmerData() async {
+    List<List<dynamic>> ddd = [];
+    _zwemmers.forEach((element) {
+      ddd.add([
+        element.id,
+        element.naam,
+        element.niveauId,
+        element.statusOef1,
+        element.statusOef2,
+        element.opmerking
+      ]);
+    });
+    await CSVData().exportZwemmerData(ddd);
   }
 }
 

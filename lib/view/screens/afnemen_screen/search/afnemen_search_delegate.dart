@@ -83,7 +83,7 @@ class ZwemmerTile extends ConsumerWidget {
       color: zwemmer.isAanwezig ? Colors.green : Colors.white,
       child: ListTile(
         onTap: () {
-          provider.setMode(true);
+          provider.setAfnemenMode(true);
           provider.toggle(zwemmer.id);
         },
         title: Text(zwemmer.naam),

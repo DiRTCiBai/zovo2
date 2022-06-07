@@ -22,4 +22,11 @@ List<Niveau> niveauTestData = [
     oef1: "oef1",
     oef2: "oef2",
   ),
+  Niveau(
+    groep: "DOL",
+    id: "DOL1",
+    niveau: 2,
+    oef1: "oef1",
+    oef2: "oef2",
+  ),
 ];

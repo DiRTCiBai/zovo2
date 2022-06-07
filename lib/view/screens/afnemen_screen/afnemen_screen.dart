@@ -18,7 +18,7 @@ class AfnemenScreen extends ConsumerWidget {
           if (provider.mode) {
             context.pop();
           } else {
-            context.go('/startScreen/AfnemenScreen/test/TestScreen');
+            context.go('/startScreen/AfnemenScreen/TestScreen');
           }
         },
         child: provider.mode ? const Text("Save") : const Text("Test"),
