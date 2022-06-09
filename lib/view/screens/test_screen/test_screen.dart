@@ -26,6 +26,7 @@ class TestScreen extends ConsumerWidget {
               (BuildContext context, int index) {
                 final zwemmer = provider.oefening1()[index];
                 return Container(
+                  color: zwemmer.statusOef ? Colors.green : Colors.white,
                   child: ListTile(
                     onTap: () => provider.toggleTest(zwemmer.zwemmerId, 1),
                     leading: Text(zwemmer.naam),
@@ -50,6 +51,7 @@ class TestScreen extends ConsumerWidget {
               (BuildContext context, int index) {
                 final zwemmer = provider.oefening2()[index];
                 return Container(
+                  color: zwemmer.statusOef ? Colors.green : Colors.white,
                   child: ListTile(
                     onTap: () => provider.toggleTest(zwemmer.zwemmerId, 2),
                     leading: Text(zwemmer.naam),

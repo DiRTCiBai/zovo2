@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:zovo2/controllers/database/csv_data.dart';
 import 'package:zovo2/models/database_models/database_models.dart';
+import 'package:zovo2/test_data/zwemmer_test_data.dart';
 
 import '../models/ui_models/ui_models.dart';
 import '../services/database/zwemmer_database/zwemmer.dart';
@@ -17,13 +18,17 @@ class ZwemmerLijst extends ChangeNotifier {
   Box? box;
   bool get mode => _mode;
 
+  ///***************************************************************************
+  /// INIT PROVIDER
+  ///***************************************************************************
   void init() async {
     box = await Hive.openBox<ZwemmerData>('zwemmers');
     final res = box!.values;
     res.forEach((element) {
       print(element.naam);
     });
-    _zwemmers = [
+    _zwemmers = zwemmerTestData;
+    /*  _zwemmers = [
       ...res
           .map(
             (e) => Zwemmer(
@@ -39,45 +44,22 @@ class ZwemmerLijst extends ChangeNotifier {
             ),
           )
           .toList()
-    ];
+    ];*/
   }
 
-  List<Zwemmer> temp() {
-    final res = box!.values;
-    res.forEach((element) {
-      print(element.naam);
-    });
-    return [
-      ...res
-          .map(
-            (e) => Zwemmer(
-              isSelected: e.isSelected,
-              naam: e.naam,
-              opmerking: e.opmerking,
-              id: e.id,
-              groep: e.groep,
-              isAanwezig: e.isAanwezig,
-              niveauId: e.niveauId,
-              statusOef1: e.statusOef1,
-              statusOef2: e.statusOef2,
-            ),
-          )
-          .toList()
-    ];
-  }
-
+  ///***************************************************************************
+  /// AFNEMEN SCREEN
+  ///***************************************************************************
   void toggle(String zwemmerId) {
     if (_mode) {
       final res = _zwemmers.firstWhere((element) => element.id == zwemmerId);
       res.isAanwezig = !res.isAanwezig;
-      //print("$mode - ${res.isAanwezig}");
       notifyListeners();
     }
 
     if (!_mode) {
       final res = _zwemmers.firstWhere((element) => element.id == zwemmerId);
       res.isSelected = !res.isSelected;
-      //print("$mode - ${res.isAanwezig}");
       notifyListeners();
     }
   }
@@ -93,11 +75,14 @@ class ZwemmerLijst extends ChangeNotifier {
 
   List<Afnemen> get afnemenZwemmers {
     if (_mode) {
-      final res = _zwemmers.where((element) => element.groep == _currentGroep).toList();
+      final res =
+          _zwemmers.where((element) => element.groep == _currentGroep).toList();
       return res
           .map(
             (e) => Afnemen(
-              niveau: _niveaus.firstWhere((element) => element.id == e.niveauId).niveau,
+              niveau: _niveaus
+                  .firstWhere((element) => element.id == e.niveauId)
+                  .niveau,
               naam: e.naam,
               zwemmerId: e.id,
               isSelected: e.isAanwezig,
@@ -106,12 +91,17 @@ class ZwemmerLijst extends ChangeNotifier {
           .toList();
     }
 
-    final res =
-        _zwemmers.where((element) => element.isAanwezig == true && element.groep == _currentGroep).toList();
+    final res = _zwemmers
+        .where((element) =>
+            element.isAanwezig == true && element.groep == _currentGroep)
+        .toList();
+
     return res
         .map(
           (e) => Afnemen(
-            niveau: _niveaus.firstWhere((element) => element.id == e.niveauId).niveau,
+            niveau: _niveaus
+                .firstWhere((element) => element.id == e.niveauId)
+                .niveau,
             naam: e.naam,
             zwemmerId: e.id,
             isSelected: e.isSelected,
@@ -121,7 +111,10 @@ class ZwemmerLijst extends ChangeNotifier {
   }
 
   List<Zwemmer> getSearchResults(String query) {
-    return _zwemmers.where((element) => element.naam.toLowerCase().contains(query.toLowerCase())).toList();
+    return _zwemmers
+        .where((element) =>
+            element.naam.toLowerCase().contains(query.toLowerCase()))
+        .toList();
   }
 
   void setAfnemenMode(bool set) {
@@ -129,8 +122,11 @@ class ZwemmerLijst extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<ZwemmerTest> _oef1 = [];
-  List<ZwemmerTest> _oef2 = [];
+  ///***************************************************************************
+  /// TEST SCREEN
+  ///***************************************************************************
+  final List<ZwemmerTest> _oef1 = [];
+  final List<ZwemmerTest> _oef2 = [];
 
   List<ZwemmerTest> oefening1() {
     zwemmerLijstOef();
@@ -143,52 +139,75 @@ class ZwemmerLijst extends ChangeNotifier {
   }
 
   void zwemmerLijstOef() {
-    final res =
-        _zwemmers.where((element) => element.isAanwezig == true && element.isSelected == true).toList();
+    final zwemmers = selectedTestZwemmers;
 
-    _oef1.clear();
-    _oef2.clear();
+    clearOefeningenLijst();
 
-    for (var value in res) {
-      final niveau = _niveaus.firstWhere((element) => element.id == value.niveauId);
-
-      _oef1.add(
-        ZwemmerTest(
-          zwemmerId: value.id,
-          naam: value.naam,
-          niveauId: value.niveauId,
-          statusOef: value.statusOef1,
-          oef: niveau.oef1,
-        ),
-      );
-
-      _oef2.add(
-        ZwemmerTest(
-          zwemmerId: value.id,
-          naam: value.naam,
-          niveauId: value.niveauId,
-          statusOef: value.statusOef2,
-          oef: niveau.oef2,
-        ),
-      );
+    for (var zwemmer in zwemmers) {
+      addZwemmerOefToLijst(zwemmer);
     }
   }
 
+  void addZwemmerOefToLijst(Zwemmer zwemmer) {
+    final niveau =
+        _niveaus.firstWhere((element) => element.id == zwemmer.niveauId);
+
+    _oef1.add(_convertToZwemmerTest(
+      zwemmer,
+      niveau.oef1,
+      zwemmer.statusOef1,
+    ));
+
+    _oef2.add(_convertToZwemmerTest(
+      zwemmer,
+      niveau.oef2,
+      zwemmer.statusOef2,
+    ));
+  }
+
+  void clearOefeningenLijst() {
+    _oef1.clear();
+    _oef2.clear();
+  }
+
+  ZwemmerTest _convertToZwemmerTest(Zwemmer data, String oef, bool statusOef) {
+    return ZwemmerTest(
+      zwemmerId: data.id,
+      naam: data.naam,
+      niveauId: data.niveauId,
+      statusOef: statusOef,
+      oef: oef,
+    );
+  }
+
+  List<Zwemmer> get selectedTestZwemmers {
+    return _zwemmers
+        .where((element) =>
+            element.isAanwezig == true &&
+            element.isSelected == true &&
+            element.groep == _currentGroep)
+        .toList();
+  }
+
+  /// toggle of zwemmer oef kan of niet
   void toggleTest(String zwemmerId, int oefIndex) {
-    final res = _zwemmers.firstWhere((element) => element.id == zwemmerId);
+    final zwemmer = _zwemmers.firstWhere((element) => element.id == zwemmerId);
 
     if (oefIndex == 1) {
-      res.statusOef1 = !res.statusOef1;
+      zwemmer.statusOef1 = !zwemmer.statusOef1;
     }
 
     if (oefIndex == 2) {
-      res.statusOef2 = !res.statusOef2;
+      zwemmer.statusOef2 = !zwemmer.statusOef2;
     }
 
     zwemmerLijstOef();
     notifyListeners();
   }
 
+  ///***************************************************************************
+  /// IMPORT EXPORT SCREEN
+  ///***************************************************************************
   void importZwemmerData() async {
     final res = await CSVData().impotZwemmerData();
 
@@ -250,6 +269,9 @@ class ZwemmerLijst extends ChangeNotifier {
   }
 }
 
+///***************************************************************************
+/// PROVIDER INSTANCE
+///***************************************************************************
 final zwemmerLijstProvider = ChangeNotifierProvider<ZwemmerLijst>((ref) {
   return ZwemmerLijst();
 });
