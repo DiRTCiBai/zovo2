@@ -21,6 +21,13 @@ final router = GoRouter(
         GoRoute(
           path: 'ZwemmersScreen',
           builder: (ctx, state) => const ZwemmersScreen(),
+          routes: [
+            GoRoute(
+              path: 'InfoZwemmerScreen/:zwemmerId',
+              builder: (ctx, state) =>
+                  InfoZwemmerScreen(zwemmerId: state.params['zwemmerId']!),
+            ),
+          ],
         ),
         GoRoute(
           path: 'ExportImportScreen',

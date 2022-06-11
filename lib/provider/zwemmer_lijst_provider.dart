@@ -269,6 +269,55 @@ class ZwemmerLijst extends ChangeNotifier {
     });
     await CSVData().exportZwemmerData(ddd);
   }
+
+  ///***************************************************************************
+  /// ZWEMMER SCREEN
+  ///***************************************************************************
+  List<String> filters = ["Over", "all", "niv"];
+  String _currentFilter = "all";
+
+  void setFilter(String newFilter) {
+    for (int i = 0; i < filters.length; i++) {
+      if (filters[i] == newFilter) {
+        _currentFilter = filters[i];
+        notifyListeners();
+        return;
+      }
+    }
+  }
+
+  List<Zwemmer> get filterZwemmerLijst {
+    if (_currentFilter == filters[0]) {
+      return zwemmers
+          .where((element) =>
+              element.statusOef2 == true && element.statusOef1 == true)
+          .toList();
+    }
+
+    if (_currentFilter == filters[2]) {
+      return zwemmers;
+    }
+
+    return zwemmers;
+  }
+
+  ///***************************************************************************
+  /// ZWEMMER INFO SCREEN
+  ///***************************************************************************
+
+  String zwemmerCurrentGroep(String zwemmerId) {
+    return _zwemmers.firstWhere((element) => element.id == zwemmerId).groep;
+  }
+
+  List<Niveau> zwemmerNiveaus(String zwemmerId) {
+    final groep =
+        zwemmers.firstWhere((element) => element.id == zwemmerId).groep;
+    return _niveaus.where((element) => element.groep == groep).toList();
+  }
+
+  Zwemmer zwemmerById(String zwemmerId) {
+    return _zwemmers.firstWhere((element) => element.id == zwemmerId);
+  }
 }
 
 ///***************************************************************************

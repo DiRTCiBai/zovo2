@@ -3,3 +3,4 @@ export 'export_import_screen/export_import_screen.dart';
 export 'start_screen/start_screen.dart';
 export 'test_screen/test_screen.dart';
 export 'zwemmers_screen/zwemmers_screen.dart';
+export 'info_zwemmer_screen/info_zwemmer_screen.dart';
